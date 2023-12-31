@@ -12,7 +12,7 @@ export default {
   <main>
     <div id="main-div">
       <h1>Pomodoro Timer</h1>
-      <Timer/>
+      <Timer />
     </div>
   </main>
 </template>
