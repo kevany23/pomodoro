@@ -7,7 +7,7 @@
     </div>
 
     <div class="timer-controls">
-      <button @click="startTimer">Start</button>
+      <button @click="startTimer">{{ isPaused ? 'Start' : 'Pause' }}</button>
       <button @click="stopTimer">Stop</button>
     </div>
   </div>
@@ -18,44 +18,64 @@ import {
   convertToMinutesAndSeconds,
   convertStringToMilliseconds,
   createDisplayTime
-} from '../util/time_util'
-import clock_alarm from '../assets/sounds/clock-alarm-8761.mp3'
+} from '../util/time_util';
+import clock_alarm from '../assets/sounds/clock-alarm-8761.mp3';
 export default {
   data() {
     return {
       startTime: 0,
       endTime: 0,
       duration: convertStringToMilliseconds('25:00'),
-      timer: 0,
+      timeRemaining: 0,
+      isPaused: true,
       intervalId: 0,
       alarmSound: new Audio(clock_alarm)
-    }
+    };
   },
   methods: {
     startTimer() {
-      this.startTime = Date.now()
-      this.endTime = this.startTime + this.duration
-      console.log(this.startTime)
-      console.log(this.endTime)
-      this.intervalId = setInterval(() => {
-        this.timer = this.endTime - Date.now()
-        if (this.timer <= 0) {
-          this.timer = 0
-          this.stopTimer()
-          this.alarmSound.play()
-        }
-      }, 5)
+      if (this.timeRemaining === 0) {
+        this.startTime = Date.now();
+        this.timeRemaining = this.duration;
+        this.isPaused = false;
+        this.intervalId = setInterval(() => {
+          if (this.isPaused) return;
+          this.timeRemaining -= Date.now() - this.startTime;
+          if (this.timeRemaining <= 0) {
+            this.timeRemaining = 0;
+            this.stopTimer();
+            this.alarmSound.play();
+          }
+          this.startTime = Date.now();
+        }, 5);
+      } else {
+        this.togglePause();
+      }
     },
     stopTimer() {
-      clearInterval(this.intervalId!)
+      clearInterval(this.intervalId!);
     },
     displayTime() {
-      const time = this.endTime ? this.timer : this.duration;
+      const time = this.timeRemaining || this.duration;
       const { minutes, seconds } = convertToMinutesAndSeconds(time);
       return createDisplayTime(minutes, seconds);
+    },
+    pauseTimer() {
+      this.isPaused = true;
+    },
+    resumeTimer() {
+      this.isPaused = false;
+      this.startTime = Date.now();
+    },
+    togglePause() {
+      if (this.isPaused) {
+        this.resumeTimer();
+      } else {
+        this.pauseTimer();
+      }
     }
   }
-}
+};
 </script>
 
 <style>

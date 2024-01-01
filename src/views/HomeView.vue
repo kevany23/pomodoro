@@ -1,11 +1,11 @@
 <script lang="ts">
-import Timer from '../components/Timer.vue'
+import Timer from '../components/Timer.vue';
 
 export default {
   components: {
     Timer
   }
-}
+};
 </script>
 
 <template>
