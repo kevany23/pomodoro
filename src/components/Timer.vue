@@ -1,14 +1,18 @@
 <template>
-  <div class="timer">
+  <div class="timer" :style="{ backgroundColor: timerColor }">
     <div class="timer-text">
-      <h2>
+      <h2 style="font-size: 3rem">
         {{ displayTime() }}
       </h2>
     </div>
 
     <div class="timer-controls">
-      <button @click="startTimer">{{ isPaused ? 'Start' : 'Pause' }}</button>
-      <button @click="stopTimer">Stop</button>
+      <button class="btn btn-primary start-pause-button" @click="startTimer">
+        {{ isPaused ? 'Start' : 'Pause' }}
+      </button>
+      <button class="btn btn-secondary reset-button" @click="stopTimer">
+        Reset
+      </button>
     </div>
   </div>
 </template>
@@ -21,6 +25,16 @@ import {
 } from '../util/time_util';
 import clock_alarm from '../assets/sounds/clock-alarm-8761.mp3';
 export default {
+  props: {
+    initialDuration: {
+      type: String,
+      default: '25:00'
+    },
+    timerColor: {
+      type: String,
+      default: 'skyblue'
+    }
+  },
   data() {
     return {
       startTime: 0,
@@ -32,7 +46,14 @@ export default {
       alarmSound: new Audio(clock_alarm)
     };
   },
+  created() {
+    this.duration = convertStringToMilliseconds(this.initialDuration);
+    this.timeRemaining = 0;
+  },
   methods: {
+    initializeTimer() {
+      
+    },
     startTimer() {
       if (this.timeRemaining === 0) {
         this.startTime = Date.now();
@@ -54,6 +75,8 @@ export default {
     },
     stopTimer() {
       clearInterval(this.intervalId!);
+      this.timeRemaining = 0;
+      this.isPaused = true;
     },
     displayTime() {
       const time = this.timeRemaining || this.duration;
@@ -73,6 +96,15 @@ export default {
       } else {
         this.pauseTimer();
       }
+    },
+    setDuration(duration: string) {
+      this.duration = convertStringToMilliseconds(duration);
+      this.timeRemaining = 0;
+    },
+    reInitializeTimer(duration?: string) {
+      this.duration = convertStringToMilliseconds(duration);
+      this.timeRemaining = 0;
+
     }
   }
 };
@@ -88,7 +120,6 @@ export default {
   width: 500px;
   height: 200px;
   justify-content: center;
-  margin-top: 20px;
 }
 .timer-text {
   font-family: monospace;
@@ -98,5 +129,26 @@ export default {
 .timer-controls {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  padding-top: 20px;
+  justify-content: center;
+}
+.start-pause-button {
+  background-color: lightgray;
+  border: none;
+  color: black;
+  font-size: 20px;
+  padding: 10px;
+  margin-right: 30px;
+  width: 100px;
+}
+.reset-button {
+  background-color: lightgray;
+  border: none;
+  color: black;
+  font-size: 20px;
+  padding: 10px;
+  width: 100px;
+  margin-left: 30px;
 }
 </style>
