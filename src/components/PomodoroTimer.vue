@@ -29,16 +29,11 @@
         </button>
       </li>
     </ul>
-    <Timer ref="timer" />
-    <!-- Render Pomodoro component when activeTab is 'pomodoro' -->
-    <div v-if="activeTab === 'shortBreak'">
-      <!-- Render Short Break component when activeTab is 'shortBreak' -->
-      <!-- Add your Short Break component code here -->
+    <Timer class="timer" ref="timer" @timer-alarm="handleTimerAlarm" />
+    <div class="settings-bar">
+      <img src="../assets/gear-fill.svg" @click="displaySettings"/>
     </div>
-    <div v-if="activeTab === 'longBreak'">
-      <!-- Render Long Break component when activeTab is 'longBreak' -->
-      <!-- Add your Long Break component code here -->
-    </div>
+    <PomodoroSettings/>
   </div>
 </template>
 
@@ -46,17 +41,21 @@
 import { onMounted } from 'vue';
 import { TimerModeEnum } from '../types/index';
 import Timer from './Timer.vue';
+import PomodoroSettings from './PomodoroSettings.vue';
 interface PomodoroTimerData {
   pomodoroDuration: string;
   shortBreakDuration: string;
   longBreakDuration: string;
   activeTab: string;
   timerMode: TimerModeEnum;
+  longBreakInterval: number;
+  pomodoroSessions: number;
 }
 export default {
   name: 'PomodoroTimer',
   components: {
-    Timer
+    Timer,
+    PomodoroSettings,
   },
   data(): PomodoroTimerData {
     return {
@@ -64,7 +63,9 @@ export default {
       shortBreakDuration: '05:00',
       longBreakDuration: '15:00',
       activeTab: 'pomodoro',
-      timerMode: TimerModeEnum.Pomodoro
+      timerMode: TimerModeEnum.Pomodoro,
+      longBreakInterval: 4,
+      pomodoroSessions: 0,
     };
   },
   created() {
@@ -78,18 +79,14 @@ export default {
     setMode(mode: TimerModeEnum | string) {
       this.timerMode = mode as TimerModeEnum;
       const timer = this.getTimer();
-      console.log(timer);
       switch (mode) {
         case TimerModeEnum.Pomodoro:
-          this.pomodoroDuration = '25:00';
           timer.setDuration(this.pomodoroDuration);
           break;
         case TimerModeEnum.ShortBreak:
-          this.shortBreakDuration = '05:00';
           timer.setDuration(this.shortBreakDuration);
           break;
         case TimerModeEnum.LongBreak:
-          this.longBreakDuration = '15:00';
           timer.setDuration(this.longBreakDuration);
           break;
       }
@@ -97,6 +94,29 @@ export default {
     },
     getTimer(): typeof Timer {
       return this.$refs.timer as typeof Timer;
+    },
+    handleTimerAlarm() {
+      // go to next stage
+      switch (this.timerMode) {
+        case TimerModeEnum.Pomodoro:
+          this.pomodoroSessions++;
+          if (this.pomodoroSessions == this.longBreakInterval) {
+            this.setMode(TimerModeEnum.LongBreak);
+            this.pomodoroSessions = 0;
+            break;
+          }
+          this.setMode(TimerModeEnum.ShortBreak);
+          break;
+        case TimerModeEnum.ShortBreak:
+          this.setMode(TimerModeEnum.Pomodoro);
+          break;
+        case TimerModeEnum.LongBreak:
+          this.setMode(TimerModeEnum.Pomodoro);
+          break;
+      }
+    },
+    displaySettings() {
+      alert('display settings');
     }
   },
   mounted() {
@@ -131,9 +151,28 @@ export default {
   height: 45px;
 }
 
+.timer {
+  padding-bottom: 0px;
+}
+
 button.active {
   color: black;
   background-color: rgba(0, 128, 255, 0.8);
   border: none;
+}
+
+.settings-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  background-color: skyblue;
+  border: none;
+  padding: 0px 15px 5px 5px;
+}
+
+.menu {
+  position: absolute;
 }
 </style>

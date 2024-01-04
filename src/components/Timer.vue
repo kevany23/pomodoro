@@ -69,6 +69,7 @@ export default {
       this.resumeTimer();
     },
     stopTimer() {
+      this.isPaused = true;
       clearInterval(this.intervalId!);
     },
     resetTimer() {
@@ -92,6 +93,7 @@ export default {
         if (this.timeRemaining <= 0) {
           this.timeRemaining = 0;
           this.stopTimer();
+          this.$emit('timer-alarm', {message: 'hello'});
           this.alarmSound.play();
         }
         this.startTime = Date.now();
