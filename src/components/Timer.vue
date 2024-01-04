@@ -7,10 +7,13 @@
     </div>
 
     <div class="timer-controls">
-      <button class="btn btn-primary start-pause-button" @click="startTimer">
+      <button
+        class="btn btn-primary start-pause-button"
+        @click="startOrPauseTimer"
+      >
         {{ isPaused ? 'Start' : 'Pause' }}
       </button>
-      <button class="btn btn-secondary reset-button" @click="stopTimer">
+      <button class="btn btn-secondary reset-button" @click="resetTimer">
         Reset
       </button>
     </div>
@@ -26,7 +29,7 @@ import {
 import clock_alarm from '../assets/sounds/clock-alarm-8761.mp3';
 export default {
   props: {
-    initialDuration: {
+    defaultDuration: {
       type: String,
       default: '25:00'
     },
@@ -42,41 +45,35 @@ export default {
       duration: convertStringToMilliseconds('25:00'),
       timeRemaining: 0,
       isPaused: true,
+      isStarted: false,
       intervalId: 0,
       alarmSound: new Audio(clock_alarm)
     };
   },
   created() {
-    this.duration = convertStringToMilliseconds(this.initialDuration);
-    this.timeRemaining = 0;
+    this.initializeTimer();
   },
   methods: {
     initializeTimer() {
-      
+      this.timeRemaining = this.duration;
+      this.isPaused = true;
+      this.isStarted = false;
     },
-    startTimer() {
-      if (this.timeRemaining === 0) {
-        this.startTime = Date.now();
-        this.timeRemaining = this.duration;
-        this.isPaused = false;
-        this.intervalId = setInterval(() => {
-          if (this.isPaused) return;
-          this.timeRemaining -= Date.now() - this.startTime;
-          if (this.timeRemaining <= 0) {
-            this.timeRemaining = 0;
-            this.stopTimer();
-            this.alarmSound.play();
-          }
-          this.startTime = Date.now();
-        }, 5);
-      } else {
+    startOrPauseTimer() {
+      if (this.isStarted) {
         this.togglePause();
+        return;
       }
+      this.isStarted = true;
+      this.isPaused = false;
+      this.resumeTimer();
     },
     stopTimer() {
       clearInterval(this.intervalId!);
-      this.timeRemaining = 0;
-      this.isPaused = true;
+    },
+    resetTimer() {
+      this.stopTimer();
+      this.initializeTimer();
     },
     displayTime() {
       const time = this.timeRemaining || this.duration;
@@ -85,10 +82,20 @@ export default {
     },
     pauseTimer() {
       this.isPaused = true;
+      clearInterval(this.intervalId!);
     },
     resumeTimer() {
       this.isPaused = false;
       this.startTime = Date.now();
+      this.intervalId = setInterval(() => {
+        this.timeRemaining -= Date.now() - this.startTime;
+        if (this.timeRemaining <= 0) {
+          this.timeRemaining = 0;
+          this.stopTimer();
+          this.alarmSound.play();
+        }
+        this.startTime = Date.now();
+      }, 5);
     },
     togglePause() {
       if (this.isPaused) {
@@ -99,12 +106,8 @@ export default {
     },
     setDuration(duration: string) {
       this.duration = convertStringToMilliseconds(duration);
-      this.timeRemaining = 0;
-    },
-    reInitializeTimer(duration?: string) {
-      this.duration = convertStringToMilliseconds(duration);
-      this.timeRemaining = 0;
-
+      this.timeRemaining = this.duration;
+      this.initializeTimer();
     }
   }
 };

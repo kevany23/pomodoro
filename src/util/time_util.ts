@@ -4,7 +4,6 @@ export function convertToMilliseconds(
 ): number {
   const totalSeconds = minutes * 60 + seconds;
   const milliseconds = totalSeconds * 1000;
-  console.log(milliseconds);
   return milliseconds;
 }
 
@@ -20,7 +19,6 @@ export function convertToMinutesAndSeconds(milliseconds: number): {
 
 export function convertStringToMilliseconds(time: string): number {
   const [minutes, seconds] = time.split(':').map(Number);
-  console.log(minutes, seconds);
   return convertToMilliseconds(minutes, seconds);
 }
 

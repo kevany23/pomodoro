@@ -1,10 +1,8 @@
 <script lang="ts">
-import Timer from '../components/Timer.vue';
 import PomodoroTimer from '../components/PomodoroTimer.vue';
 
 export default {
   components: {
-    Timer,
     PomodoroTimer
   }
 };

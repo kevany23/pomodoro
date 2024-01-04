@@ -2,20 +2,34 @@
   <div class="pomodoro-timer">
     <ul class="pomodoro-tabbar nav nav-tabs" role="tablist">
       <li class="pomodoro-tab nav-item" role="tab" data-bs-toggle="pill">
-        <button class="btn" :class="{ active: timerMode == 'Pomodoro' }" @click="setMode('Pomodoro')">Pomodoro</button>
+        <button
+          class="btn"
+          :class="{ active: timerMode == 'Pomodoro' }"
+          @click="setMode('Pomodoro')"
+        >
+          Pomodoro
+        </button>
       </li>
       <li class="pomodoro-tab nav-item" role="tab" data-bs-toggle="pill">
-        <button class="btn" :class="{ active: timerMode == 'ShortBreak' }" @click="setMode('ShortBreak')">
+        <button
+          class="btn"
+          :class="{ active: timerMode == 'ShortBreak' }"
+          @click="setMode('ShortBreak')"
+        >
           Short Break
         </button>
       </li>
       <li class="pomodoro-tab nav-item" role="tab" data-bs-toggle="pill">
-        <button class="btn" :class="{ active: timerMode == 'LongBreak' }" @click="setMode('LongBreak')">
+        <button
+          class="btn"
+          :class="{ active: timerMode == 'LongBreak' }"
+          @click="setMode('LongBreak')"
+        >
           Long Break
         </button>
       </li>
     </ul>
-    <Timer ref="timer"/>
+    <Timer ref="timer" />
     <!-- Render Pomodoro component when activeTab is 'pomodoro' -->
     <div v-if="activeTab === 'shortBreak'">
       <!-- Render Short Break component when activeTab is 'shortBreak' -->
@@ -29,6 +43,7 @@
 </template>
 
 <script lang="ts">
+import { onMounted } from 'vue';
 import { TimerModeEnum } from '../types/index';
 import Timer from './Timer.vue';
 interface PomodoroTimerData {
@@ -52,6 +67,13 @@ export default {
       timerMode: TimerModeEnum.Pomodoro
     };
   },
+  created() {
+    onMounted(() => {
+      const timer = this.getTimer();
+      timer.setDuration(this.pomodoroDuration);
+      timer.initializeTimer();
+    });
+  },
   methods: {
     setMode(mode: TimerModeEnum | string) {
       this.timerMode = mode as TimerModeEnum;
@@ -60,20 +82,18 @@ export default {
       switch (mode) {
         case TimerModeEnum.Pomodoro:
           this.pomodoroDuration = '25:00';
-          timer.pauseTimer();
           timer.setDuration(this.pomodoroDuration);
           break;
         case TimerModeEnum.ShortBreak:
           this.shortBreakDuration = '05:00';
-          timer.pauseTimer();
           timer.setDuration(this.shortBreakDuration);
           break;
         case TimerModeEnum.LongBreak:
-          timer.pauseTimer();
           this.longBreakDuration = '15:00';
           timer.setDuration(this.longBreakDuration);
           break;
       }
+      timer.resetTimer();
     },
     getTimer(): typeof Timer {
       return this.$refs.timer as typeof Timer;
