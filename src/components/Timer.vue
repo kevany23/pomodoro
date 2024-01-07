@@ -28,6 +28,8 @@ import {
 } from '../util/time_util';
 import clock_alarm from '../assets/sounds/clock-alarm-8761.mp3';
 export default {
+  /* eslint-disable-next-line */
+  name: 'Timer',
   props: {
     defaultDuration: {
       type: String,
@@ -93,7 +95,7 @@ export default {
         if (this.timeRemaining <= 0) {
           this.timeRemaining = 0;
           this.stopTimer();
-          this.$emit('timer-alarm', {message: 'hello'});
+          this.$emit('timer-alarm', { message: 'hello' });
           this.alarmSound.play();
         }
         this.startTime = Date.now();

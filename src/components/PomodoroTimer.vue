@@ -31,9 +31,9 @@
     </ul>
     <Timer class="timer" ref="timer" @timer-alarm="handleTimerAlarm" />
     <div class="settings-bar">
-      <img src="../assets/gear-fill.svg" @click="displaySettings"/>
+      <img src="../assets/gear-fill.svg" @click="displaySettings" />
     </div>
-    <PomodoroSettings/>
+    <PomodoroSettings ref="settings"/>
   </div>
 </template>
 
@@ -50,12 +50,13 @@ interface PomodoroTimerData {
   timerMode: TimerModeEnum;
   longBreakInterval: number;
   pomodoroSessions: number;
+  isSettingsVisibleProps: boolean;
 }
 export default {
   name: 'PomodoroTimer',
   components: {
     Timer,
-    PomodoroSettings,
+    PomodoroSettings
   },
   data(): PomodoroTimerData {
     return {
@@ -66,6 +67,7 @@ export default {
       timerMode: TimerModeEnum.Pomodoro,
       longBreakInterval: 4,
       pomodoroSessions: 0,
+      isSettingsVisibleProps: false
     };
   },
   created() {
@@ -116,7 +118,8 @@ export default {
       }
     },
     displaySettings() {
-      alert('display settings');
+      const settings = this.$refs.settings as typeof PomodoroSettings;
+      settings.toggleDisplay();
     }
   },
   mounted() {
