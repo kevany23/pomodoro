@@ -1,6 +1,7 @@
-# vue-project
+# Pomodoro Timer
 
-This template should help get you started developing with Vue 3 in Vite.
+Basic Pomodoro Timer App created with VueJS. [Wikipedia](https://en.wikipedia.org/wiki/Pomodoro_Technique)
+This project also serves as a prototype for another project.
 
 ## Recommended IDE Setup
 
@@ -43,4 +44,15 @@ npm run build
 
 ```sh
 npm run lint
+```
+### Format with Prettier
+
+```sh
+npm run format
+```
+
+### Testing with Vitest
+
+```sh
+npm run test
 ```
