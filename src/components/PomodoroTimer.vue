@@ -33,13 +33,15 @@
     <div class="settings-bar">
       <img src="../assets/gear-fill.svg" @click="displaySettings" />
     </div>
-    <PomodoroSettings ref="settings"/>
+    <PomodoroSettings ref="settings" />
   </div>
 </template>
 
 <script lang="ts">
 import { onMounted } from 'vue';
-import { TimerModeEnum } from '../types/index';
+import type { AppSettings } from '../types/index';
+import { TimerModeEnum, DefaultSettings } from '../types/index';
+import { createDisplayTime } from '../util/time_util';
 import Timer from './Timer.vue';
 import PomodoroSettings from './PomodoroSettings.vue';
 interface PomodoroTimerData {
@@ -51,6 +53,7 @@ interface PomodoroTimerData {
   longBreakInterval: number;
   pomodoroSessions: number;
   isSettingsVisibleProps: boolean;
+  settings: AppSettings;
 }
 export default {
   name: 'PomodoroTimer',
@@ -67,35 +70,49 @@ export default {
       timerMode: TimerModeEnum.Pomodoro,
       longBreakInterval: 4,
       pomodoroSessions: 0,
-      isSettingsVisibleProps: false
+      isSettingsVisibleProps: false,
+      settings: { ...DefaultSettings }
     };
   },
   created() {
+    // load settings from local storage
+    if (localStorage.getItem('settings') !== null) {
+      this.settings = JSON.parse(localStorage.getItem('settings')!);
+    } else {
+      this.settings = { ...DefaultSettings };
+    }
     onMounted(() => {
+      this.setTimerDuration(this.settings.pomodoroDuration);
       const timer = this.getTimer();
-      timer.setDuration(this.pomodoroDuration);
       timer.initializeTimer();
     });
   },
   methods: {
     setMode(mode: TimerModeEnum | string) {
       this.timerMode = mode as TimerModeEnum;
-      const timer = this.getTimer();
       switch (mode) {
         case TimerModeEnum.Pomodoro:
-          timer.setDuration(this.pomodoroDuration);
+          this.setTimerDuration(this.settings.pomodoroDuration);
           break;
         case TimerModeEnum.ShortBreak:
-          timer.setDuration(this.shortBreakDuration);
+          this.setTimerDuration(this.settings.shortBreakDuration);
           break;
         case TimerModeEnum.LongBreak:
-          timer.setDuration(this.longBreakDuration);
+          this.setTimerDuration(this.settings.longBreakDuration);
           break;
       }
+      const timer = this.getTimer();
       timer.resetTimer();
     },
     getTimer(): typeof Timer {
       return this.$refs.timer as typeof Timer;
+    },
+    /**
+     * Set the duration based on minutes
+     */
+    setTimerDuration(duration: number) {
+      const timer = this.getTimer();
+      timer.setDuration(createDisplayTime(duration, 0));
     },
     handleTimerAlarm() {
       // go to next stage
