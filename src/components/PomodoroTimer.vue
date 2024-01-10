@@ -177,6 +177,7 @@ export default {
   border: none;
   border-radius: 10px;
   box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
+  padding-bottom: 10px;
 }
 
 .pomodoro-tabbar {
@@ -195,6 +196,7 @@ export default {
 
 .timer {
   padding-bottom: 0px;
+  height: 180px;
 }
 
 button.active {
@@ -211,8 +213,7 @@ button.active {
   width: 100%;
   background-color: skyblue;
   border: none;
-  padding: 0px 15px 5px 5px;
-  border-radius: 10px;
+  padding: 0px 15px 5px 0px;
 }
 
 .menu {
