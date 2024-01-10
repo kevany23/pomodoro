@@ -24,6 +24,13 @@
         type="number"
         v-model="settings.longBreakDuration"
       />
+      <label for="long-break-time">Long Break Interval</label>
+      <input
+        id="long-break-time"
+        placeholder="Long Break Interval"
+        type="number"
+        v-model="settings.longBreakInterval"
+      />
       <button class="btn btn-secondary" @click="restoreDefault">
         Restore Default
       </button>
@@ -47,7 +54,7 @@
           v-model="settings.autoStartShortBreak"
         />
         <label class="form-check-label" for="autoStartBreak"
-          >Auto Start Break</label
+          >Auto Start Short Break</label
         >
         <br />
         <input
@@ -133,23 +140,22 @@ export default {
   background-color: white;
   position: absolute;
   width: 300px;
-  height: 500px;
-  padding: 20px;
-  padding-top: 5px;
-  padding-right: 15px;
+  height: 520px;
+  padding: 5px 15px 20px 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   border: 1px solid lightgray;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 .settings-form {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-  height: 80%;
+  justify-content: space-between;
+  height: 85%;
 }
 
 .pomodoro-settings > img {

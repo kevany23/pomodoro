@@ -90,19 +90,30 @@ export default {
   methods: {
     setMode(mode: TimerModeEnum | string) {
       this.timerMode = mode as TimerModeEnum;
+      const timer = this.getTimer();
       switch (mode) {
         case TimerModeEnum.Pomodoro:
           this.setTimerDuration(this.settings.pomodoroDuration);
+          timer.resetTimer();
+          if (this.settings.autoStartPomodoro) {
+            this.autoResumeTimer();
+          }
           break;
         case TimerModeEnum.ShortBreak:
           this.setTimerDuration(this.settings.shortBreakDuration);
+          timer.resetTimer();
+          if (this.settings.autoStartShortBreak) {
+            this.autoResumeTimer();
+          }
           break;
         case TimerModeEnum.LongBreak:
           this.setTimerDuration(this.settings.longBreakDuration);
+          timer.resetTimer();
+          if (this.settings.autoStartLongBreak) {
+            this.autoResumeTimer();
+          }
           break;
       }
-      const timer = this.getTimer();
-      timer.resetTimer();
     },
     getTimer(): typeof Timer {
       return this.$refs.timer as typeof Timer;
@@ -125,6 +136,9 @@ export default {
             break;
           }
           this.setMode(TimerModeEnum.ShortBreak);
+          if (this.settings.autoStartShortBreak) {
+            this.autoResumeTimer();
+          }
           break;
         case TimerModeEnum.ShortBreak:
           this.setMode(TimerModeEnum.Pomodoro);
@@ -137,6 +151,12 @@ export default {
     displaySettings() {
       const settings = this.$refs.settings as typeof PomodoroSettings;
       settings.toggleDisplay();
+    },
+    autoResumeTimer() {
+      const timer = this.getTimer();
+      setTimeout(() => {
+        timer.resumeTimer();
+      }, 5000);
     }
   },
   mounted() {
@@ -155,6 +175,8 @@ export default {
   margin-top: 20px;
   background-color: skyblue;
   border: none;
+  border-radius: 10px;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.1);
 }
 
 .pomodoro-tabbar {
@@ -190,6 +212,7 @@ button.active {
   background-color: skyblue;
   border: none;
   padding: 0px 15px 5px 5px;
+  border-radius: 10px;
 }
 
 .menu {
