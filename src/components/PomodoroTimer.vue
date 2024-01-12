@@ -48,7 +48,6 @@ interface PomodoroTimerData {
   pomodoroDuration: string;
   shortBreakDuration: string;
   longBreakDuration: string;
-  activeTab: string;
   timerMode: TimerModeEnum;
   longBreakInterval: number;
   pomodoroSessions: number;
@@ -66,7 +65,6 @@ export default {
       pomodoroDuration: '25:00',
       shortBreakDuration: '05:00',
       longBreakDuration: '15:00',
-      activeTab: 'pomodoro',
       timerMode: TimerModeEnum.Pomodoro,
       longBreakInterval: 4,
       pomodoroSessions: 0,
@@ -85,6 +83,7 @@ export default {
       this.setTimerDuration(this.settings.pomodoroDuration);
       const timer = this.getTimer();
       timer.initializeTimer();
+      Notification.requestPermission();
     });
   },
   methods: {
@@ -129,6 +128,7 @@ export default {
       // go to next stage
       switch (this.timerMode) {
         case TimerModeEnum.Pomodoro:
+          new Notification("Your pomodoro session is over. It's time for a break.");
           this.pomodoroSessions++;
           if (this.pomodoroSessions == this.longBreakInterval) {
             this.setMode(TimerModeEnum.LongBreak);
@@ -141,9 +141,11 @@ export default {
           }
           break;
         case TimerModeEnum.ShortBreak:
+          new Notification('Your break is over. Time to get back to work.');
           this.setMode(TimerModeEnum.Pomodoro);
           break;
         case TimerModeEnum.LongBreak:
+          new Notification('Your break is over. Time to get back to work.');
           this.setMode(TimerModeEnum.Pomodoro);
           break;
       }
@@ -158,9 +160,6 @@ export default {
         timer.resumeTimer();
       }, 5000);
     }
-  },
-  mounted() {
-    // Code to run when the component is mounted
   }
 };
 </script>

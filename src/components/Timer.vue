@@ -56,10 +56,16 @@ export default {
     this.initializeTimer();
   },
   methods: {
+    // public methods
     initializeTimer() {
       this.timeRemaining = this.duration;
       this.isPaused = true;
       this.isStarted = false;
+    },
+    setDuration(duration: string) {
+      this.duration = convertStringToMilliseconds(duration);
+      this.timeRemaining = this.duration;
+      this.initializeTimer();
     },
     startOrPauseTimer() {
       if (this.isStarted) {
@@ -83,6 +89,7 @@ export default {
       const { minutes, seconds } = convertToMinutesAndSeconds(time);
       return createDisplayTime(minutes, seconds);
     },
+    // helper methods
     pauseTimer() {
       this.isPaused = true;
       clearInterval(this.intervalId!);
@@ -107,11 +114,6 @@ export default {
       } else {
         this.pauseTimer();
       }
-    },
-    setDuration(duration: string) {
-      this.duration = convertStringToMilliseconds(duration);
-      this.timeRemaining = this.duration;
-      this.initializeTimer();
     }
   }
 };
